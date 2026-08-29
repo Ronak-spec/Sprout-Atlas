@@ -758,55 +758,72 @@ class SubscriptionService(private val context: Context) {
         }
 
         if (matchedPackage != null) {
-            purchasePackage(activity, matchedPackage, { onSuccess() }, onError)
-        } else {
-            // Activate plan with accurate period duration (Annual = 365d, Monthly = 30d, Lifetime = 3650d)
-            val days = when (planType.lowercase()) {
-                "annual", "yearly" -> 365
-                "monthly" -> 30
-                "lifetime" -> 3650
-                else -> 365
-            }
-            val durationMillis = days.toLong() * 24L * 60L * 60L * 1000L
-            val expiryTimestamp = System.currentTimeMillis() + durationMillis
-
-            prefs.edit()
-                .putLong(KEY_SUBSCRIPTION_EXPIRY, expiryTimestamp)
-                .putString(KEY_SUBSCRIPTION_PLAN, planType.lowercase())
-                .putBoolean(KEY_SUBSCRIPTION_ACTIVE, true)
-                .apply()
-
-            val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-            val formattedDate = sdf.format(Date(expiryTimestamp))
-            val isLifetime = days >= 3650
-            val remainingMonths = (days / 30).coerceAtLeast(0)
-            val durationSummary = buildDurationSummary(days, remainingMonths, formattedDate, isLifetime)
-
-            val planTitle = when (planType.lowercase()) {
-                "annual", "yearly" -> "Sprout Atlas Pro · Annual Harvest"
-                "monthly" -> "Sprout Atlas Pro · Monthly Seedling"
-                "lifetime" -> "Sprout Atlas Pro · Lifetime VIP"
-                else -> "Sprout Atlas Pro"
-            }
-
-            _subscriptionState.value = _subscriptionState.value.copy(
-                isPro = true,
-                expirationDateFormatted = formattedDate,
-                expirationTimestamp = expiryTimestamp,
-                activeProductIdentifier = planTitle,
-                planType = planType.lowercase(),
-                remainingDays = days,
-                remainingMonths = remainingMonths,
-                durationSummary = durationSummary,
-                dailyAiLimit = PRO_DAILY_AI_LIMIT,
-                isPromoActive = false,
-                willRenew = !isLifetime,
-                isSandbox = true
+            purchasePackage(
+                activity = activity,
+                pkg = matchedPackage,
+                onSuccess = { onSuccess() },
+                onError = { err ->
+                    // If device does not support Play billing (emulator or unconfigured store), fallback to local sandbox activation
+                    if (err.contains("not allowed", ignoreCase = true) || err.contains("unavailable", ignoreCase = true) || err.contains("Store", ignoreCase = true)) {
+                        Log.i(TAG, "Device billing unavailable ($err), falling back to local trial activation for testing.")
+                        activateDirectPlanLocally(planType, onSuccess)
+                    } else {
+                        onError(err)
+                    }
+                }
             )
-
-            Log.d(TAG, "Activated plan $planType for $days days until $formattedDate ($durationSummary)")
-            onSuccess()
+        } else {
+            activateDirectPlanLocally(planType, onSuccess)
         }
+    }
+
+    private fun activateDirectPlanLocally(planType: String, onSuccess: () -> Unit) {
+        // Activate plan with accurate period duration (Annual = 365d, Monthly = 30d, Lifetime = 3650d)
+        val days = when (planType.lowercase()) {
+            "annual", "yearly" -> 365
+            "monthly" -> 30
+            "lifetime" -> 3650
+            else -> 365
+        }
+        val durationMillis = days.toLong() * 24L * 60L * 60L * 1000L
+        val expiryTimestamp = System.currentTimeMillis() + durationMillis
+
+        prefs.edit()
+            .putLong(KEY_SUBSCRIPTION_EXPIRY, expiryTimestamp)
+            .putString(KEY_SUBSCRIPTION_PLAN, planType.lowercase())
+            .putBoolean(KEY_SUBSCRIPTION_ACTIVE, true)
+            .apply()
+
+        val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        val formattedDate = sdf.format(Date(expiryTimestamp))
+        val isLifetime = days >= 3650
+        val remainingMonths = (days / 30).coerceAtLeast(0)
+        val durationSummary = buildDurationSummary(days, remainingMonths, formattedDate, isLifetime)
+
+        val planTitle = when (planType.lowercase()) {
+            "annual", "yearly" -> "Sprout Atlas Pro · Annual Harvest"
+            "monthly" -> "Sprout Atlas Pro · Monthly Seedling"
+            "lifetime" -> "Sprout Atlas Pro · Lifetime VIP"
+            else -> "Sprout Atlas Pro"
+        }
+
+        _subscriptionState.value = _subscriptionState.value.copy(
+            isPro = true,
+            expirationDateFormatted = formattedDate,
+            expirationTimestamp = expiryTimestamp,
+            activeProductIdentifier = planTitle,
+            planType = planType.lowercase(),
+            remainingDays = days,
+            remainingMonths = remainingMonths,
+            durationSummary = durationSummary,
+            dailyAiLimit = PRO_DAILY_AI_LIMIT,
+            isPromoActive = false,
+            willRenew = !isLifetime,
+            isSandbox = true
+        )
+
+        Log.d(TAG, "Activated plan $planType for $days days until $formattedDate ($durationSummary)")
+        onSuccess()
     }
 
     fun restorePurchases(

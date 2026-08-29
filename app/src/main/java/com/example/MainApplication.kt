@@ -15,7 +15,7 @@ class MainApplication: Application() {
                 ""
             }
             if (rcKey.isNotBlank() && !rcKey.startsWith("goog_YOUR_")) {
-                Purchases.logLevel = LogLevel.DEBUG
+                Purchases.logLevel = LogLevel.WARN
                 Purchases.configure(PurchasesConfiguration.Builder(this, rcKey).build())
             }
         } catch (e: Exception) {

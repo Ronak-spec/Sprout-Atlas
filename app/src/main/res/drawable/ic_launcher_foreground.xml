@@ -1,0 +1,46 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.75"
+        android:scaleY="0.75"
+        android:translateX="13.5"
+        android:translateY="13.5">
+        <!-- Stem -->
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M54,82 C53,64 54,50 54,34"
+            android:strokeWidth="4"
+            android:strokeColor="#FAF6E9"
+            android:strokeLineCap="round" />
+        <!-- Left Leaf -->
+        <path
+            android:fillColor="#7FA86D"
+            android:pathData="M54,48 C40,46 28,36 26,20 C44,21 54,30 55,46 Z"
+            android:strokeWidth="2.5"
+            android:strokeColor="#FAF6E9" />
+        <!-- Right Leaf -->
+        <path
+            android:fillColor="#FAF6E9"
+            android:pathData="M54,42 C68,38 78 28 80,12 C62,14 53,24 51,40 Z"
+            android:strokeWidth="2.5"
+            android:strokeColor="#233022" />
+        <!-- Small Apple / Fruit accent -->
+        <path
+            android:fillColor="#D6482F"
+            android:pathData="M54,64 C64,62 72,70 70,80 C68,90 58,96 54,95 C50,96 40,90 38,80 C36,70 44,62 54,64 Z"
+            android:strokeWidth="2"
+            android:strokeColor="#FAF6E9" />
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M54,64 C55,60 58,58 61,59"
+            android:strokeWidth="2"
+            android:strokeColor="#FAF6E9"
+            android:strokeLineCap="round" />
+    </group>
+</vector>
+

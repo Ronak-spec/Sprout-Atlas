@@ -1,0 +1,8 @@
+{
+  "name": "Remix Sprout Atlas",
+  "description": "A field guide for the produce aisle. Explore 500+ fruits and vegetables with nutrition facts, storage tips, washing advice, botanical trivia, interactive daily quizzes, nutrition tutor, meal planner, rainbow challenge, and AI scanner.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

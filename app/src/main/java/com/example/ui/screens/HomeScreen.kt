@@ -475,32 +475,33 @@ fun HomeScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             EyebrowHeader(
-                                text = "Daily Specimen · ${todayQuiz.dateString}",
+                                text = "Daily Specimen",
                                 color = SproutCitrus
                             )
                             Surface(
                                 shape = RoundedCornerShape(100.dp),
                                 color = Color(0x28FAF6E9),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, SproutCitrus.copy(alpha = 0.4f))
+                                border = androidx.compose.foundation.BorderStroke(1.dp, SproutCitrus.copy(alpha = 0.45f))
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.AutoAwesome,
                                         contentDescription = null,
                                         tint = SproutCitrus,
-                                        modifier = Modifier.size(10.dp)
+                                        modifier = Modifier.size(11.dp)
                                     )
                                     Text(
                                         text = "${quizStreak}-day streak",
                                         style = TextStyle(
                                             fontFamily = FontFamily.Monospace,
-                                            fontSize = 9.sp,
+                                            fontSize = 9.5.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = SproutCitrus
+                                            color = SproutCitrus,
+                                            textAlign = TextAlign.Center
                                         )
                                     )
                                 }

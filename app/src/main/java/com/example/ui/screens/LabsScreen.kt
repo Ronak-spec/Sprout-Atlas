@@ -219,8 +219,12 @@ fun LabsScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SproutPaper.copy(alpha = 0.96f))
-                .border(width = 1.3.dp, color = SproutLine.copy(alpha = 0.1f))
+                .background(SproutPaperCard)
+                .border(
+                    width = 1.2.dp,
+                    color = SproutLine.copy(alpha = 0.35f),
+                    shape = androidx.compose.ui.graphics.RectangleShape
+                )
                 .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
             EyebrowHeader(text = "Experimental features")
@@ -250,6 +254,7 @@ fun LabsScreen(
                     title = "Nutrition\nTutor",
                     icon = { Icon(Icons.Outlined.Forum, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     selected = selectedLabTab == "tutor",
+                    accentColor = SproutLeaf,
                     onClick = { selectedLabTab = "tutor" },
                     modifier = Modifier.weight(1f)
                 )
@@ -257,6 +262,7 @@ fun LabsScreen(
                     title = "Meal\nPlanner",
                     icon = { Icon(Icons.Outlined.Restaurant, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     selected = selectedLabTab == "planner",
+                    accentColor = SproutTomato,
                     onClick = { selectedLabTab = "planner" },
                     modifier = Modifier.weight(1f)
                 )
@@ -264,6 +270,7 @@ fun LabsScreen(
                     title = "Rainbow\nChallenge",
                     icon = { Icon(Icons.Outlined.Palette, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     selected = selectedLabTab == "rainbow",
+                    accentColor = SproutCitrus,
                     onClick = { selectedLabTab = "rainbow" },
                     modifier = Modifier.weight(1f)
                 )
@@ -271,6 +278,7 @@ fun LabsScreen(
                     title = "Scanner\nVision",
                     icon = { Icon(Icons.Outlined.PhotoCamera, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     selected = selectedLabTab == "scanner",
+                    accentColor = Color(0xFF64B5F6),
                     onClick = { selectedLabTab = "scanner" },
                     modifier = Modifier.weight(1f)
                 )
@@ -321,7 +329,7 @@ fun LabsScreen(
                                 )
                             )
                             Text(
-                                text = "• 500 AI runs/day",
+                                text = "• 200 AI runs/day",
                                 style = TextStyle(
                                     fontSize = 11.sp,
                                     color = SproutInkSoft
@@ -336,7 +344,7 @@ fun LabsScreen(
                                 .padding(horizontal = 8.dp, vertical = 3.dp)
                         ) {
                             Text(
-                                text = "$remainingCredits / 500 LEFT",
+                                text = "$remainingCredits / ${SproutAtlasRepository.PRO_DAILY_LABS_LIMIT} LEFT",
                                 style = TextStyle(
                                     fontSize = 9.5.sp,
                                     fontWeight = FontWeight.ExtraBold,
@@ -2677,6 +2685,7 @@ private fun LabSegmentTab(
     title: String,
     icon: @Composable () -> Unit,
     selected: Boolean,
+    accentColor: Color = SproutTomato,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -2695,7 +2704,7 @@ private fun LabSegmentTab(
             verticalArrangement = Arrangement.spacedBy(3.5.dp)
         ) {
             CompositionLocalProvider(
-                LocalContentColor provides if (selected) SproutCitrus else SproutInkSoft
+                LocalContentColor provides if (selected) accentColor else SproutInkSoft
             ) {
                 icon()
             }

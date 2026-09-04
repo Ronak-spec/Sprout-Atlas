@@ -16,6 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -87,9 +90,13 @@ fun ExploreScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SproutPaper.copy(alpha = 0.96f))
-                .border(width = 1.3.dp, color = SproutLine.copy(alpha = 0.1f))
-                .padding(horizontal = 20.dp, vertical = 12.dp),
+                .background(SproutPaperCard)
+                .border(
+                    width = 1.2.dp,
+                    color = SproutLine.copy(alpha = 0.35f),
+                    shape = androidx.compose.ui.graphics.RectangleShape
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(
@@ -102,8 +109,9 @@ fun ExploreScreen(
                     Text(
                         text = "Explore",
                         style = TextStyle(
+                            fontFamily = FontFamily.Default,
                             fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Black,
                             color = SproutInk
                         ),
                         modifier = Modifier.padding(top = 2.dp)
@@ -203,27 +211,30 @@ fun ExploreScreen(
                         val remaining = allMatchedItems.size - visibleLimit
                         val toLoad = minOf(20, remaining)
                         item(span = { GridItemSpan(2) }) {
-                            Box(
+                            Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 10.dp, bottom = 16.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(SproutPaperCard)
-                                    .border(1.3.dp, SproutLine.copy(alpha = 0.35f), RoundedCornerShape(14.dp))
                                     .clickable { visibleLimit += 20 }
-                                    .padding(vertical = 14.dp)
                                     .testTag("load_more_guides_btn"),
-                                contentAlignment = Alignment.Center
+                                shape = RoundedCornerShape(100.dp),
+                                color = SproutPaperCard,
+                                border = androidx.compose.foundation.BorderStroke(1.2.dp, SproutLine.copy(alpha = 0.35f))
                             ) {
-                                Text(
-                                    text = "Load $toLoad more guides ↓",
-                                    style = TextStyle(
-                                        fontFamily = FontFamily.Default,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = SproutInk
+                                Box(
+                                    modifier = Modifier.padding(vertical = 12.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "Load $toLoad more guides ↓",
+                                        style = TextStyle(
+                                            fontFamily = FontFamily.Default,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = SproutLeaf
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                     }
@@ -244,55 +255,65 @@ private fun ExploreGridCard(
         firstSentence.split(";").firstOrNull()?.trim() ?: firstSentence
     }
 
-    Box(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(SproutPaperCard)
-            .border(1.3.dp, SproutLine.copy(alpha = 0.22f), RoundedCornerShape(18.dp))
             .clickable { onClick() }
-            .padding(12.dp)
-            .testTag("explore_card_${item.id}")
+            .testTag("explore_card_${item.id}"),
+        shape = RoundedCornerShape(18.dp),
+        color = SproutPaperCard,
+        border = androidx.compose.foundation.BorderStroke(1.2.dp, SproutLine.copy(alpha = 0.35f))
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                // Enriched & Enlarged fruit/vegetable icon
-                ProduceDoodle(
-                    symbolId = item.symbolId,
-                    archetype = item.archetype,
-                    name = item.name,
-                    size = 72.dp
-                )
+                Box(
+                    modifier = Modifier
+                        .size(68.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(Color(0xFFE8F5E9))
+                        .padding(4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ProduceDoodle(
+                        symbolId = item.symbolId,
+                        archetype = item.archetype,
+                        name = item.name,
+                        size = 56.dp
+                    )
+                }
 
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(SproutLeaf.copy(alpha = 0.12f))
-                        .border(1.dp, SproutLeaf.copy(alpha = 0.25f), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 7.dp, vertical = 3.dp)
+                        .clip(RoundedCornerShape(100.dp))
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(Color(0xFFDCFCE7), Color(0xFFBBF7D0))
+                            )
+                        )
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
                     Text(
                         text = tagText,
                         style = TextStyle(
                             fontFamily = FontFamily.Default,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = SproutLeafDark
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF047857)
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(2.dp))
 
             Text(
                 text = item.name,
@@ -311,9 +332,9 @@ private fun ExploreGridCard(
                 text = shortBlurb,
                 style = TextStyle(
                     fontFamily = FontFamily.Default,
-                    fontSize = 12.5.sp,
+                    fontSize = 12.sp,
                     color = SproutInkSoft,
-                    lineHeight = 17.sp
+                    lineHeight = 16.sp
                 ),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -325,8 +346,8 @@ private fun ExploreGridCard(
                     style = TextStyle(
                         fontFamily = FontFamily.Default,
                         fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = SproutLeafDark
+                        fontWeight = FontWeight.SemiBold,
+                        color = SproutLeaf
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

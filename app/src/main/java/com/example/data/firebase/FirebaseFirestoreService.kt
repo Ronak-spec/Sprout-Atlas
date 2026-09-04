@@ -214,7 +214,7 @@ class FirebaseFirestoreService(private val context: Context) {
         isPro: Boolean,
         expirationDate: String?,
         isTrial: Boolean,
-        dailyAiLimit: Int = 500,
+        dailyAiLimit: Int = 200,
         durationSummary: String? = null
     ): Result<Unit> {
         val db = firestore ?: return Result.failure(IllegalStateException("Firestore is not available"))

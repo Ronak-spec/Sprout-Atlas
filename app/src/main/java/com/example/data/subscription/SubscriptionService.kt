@@ -44,7 +44,7 @@ data class SproutSubscriptionState(
     val remainingDays: Int = 0,
     val remainingMonths: Int = 0,
     val durationSummary: String = "",
-    val dailyAiLimit: Int = 500
+    val dailyAiLimit: Int = 200
 )
 
 data class PlanOption(
@@ -68,7 +68,7 @@ class SubscriptionService(private val context: Context) {
 
     companion object {
         const val PRO_ENTITLEMENT_ID = "premium_pro"
-        const val PRO_DAILY_AI_LIMIT = 500
+        const val PRO_DAILY_AI_LIMIT = 200
         private const val TAG = "SproutRevenueCat"
         private const val PREFS_NAME = "sprout_subscription_prefs"
         const val SINGLE_PROMO_CODE = "SPROUT30"
@@ -139,11 +139,19 @@ class SubscriptionService(private val context: Context) {
      * Checks if explore guides have all tabs unlocked:
      * - True if user has an active Pro subscription or 14-day trial.
      * - True if the free user is still on Day 1 (first 24 hours of app launch).
-     * - False on Day 2+ for Free users (only Info tab will be available; Identify & Chemicals are gated).
+     * - False on Day 2+ for Free users (only 1 tab visible: Information).
      */
     fun isFullGuideVisibilityActive(): Boolean {
+        checkLocalPromoOrTrialStatus()
         if (_subscriptionState.value.isPro) return true
         return isFirstDayGracePeriodActive()
+    }
+
+    /**
+     * Refreshes local trial and promo expirations to keep subscription state up-to-date.
+     */
+    fun refreshSubscriptionState() {
+        checkLocalPromoOrTrialStatus()
     }
 
     /**
@@ -223,14 +231,40 @@ class SubscriptionService(private val context: Context) {
         val linkedEmail = prefs.getString(KEY_LINKED_EMAIL, null)
         val linkedUid = prefs.getString(KEY_LINKED_UID, null)
 
-        val activeExpiry = maxOf(promoExpiry, trialExpiry, subExpiry)
+        // 1. TRIAL SHUTDOWN: When 14-day free trial expires, mark used and clear
+        if (trialExpiry > 0L && trialExpiry <= now) {
+            prefs.edit().putBoolean(KEY_TRIAL_USED, true).apply()
+            val normEmail = linkedEmail?.trim()?.lowercase()
+            if (!normEmail.isNullOrBlank()) {
+                prefs.edit().putBoolean("trial_used_email_$normEmail", true).apply()
+            }
+            if (!linkedUid.isNullOrBlank()) {
+                prefs.edit().putBoolean("trial_used_uid_$linkedUid", true).apply()
+            }
+        }
+
+        // 2. PROMO TRIAL SHUTDOWN: When 30-day promo trial expires, remove promo code
+        if (promoExpiry > 0L && promoExpiry <= now) {
+            prefs.edit().remove(KEY_PROMO_CODE).remove(KEY_PROMO_EXPIRY).apply()
+        }
+
+        // 3. SUBSCRIPTION EXPIRY: When non-lifetime subscription period expires
+        if (subExpiry > 0L && subExpiry <= now && subPlan != "lifetime") {
+            prefs.edit().remove(KEY_SUBSCRIPTION_PLAN).remove(KEY_SUBSCRIPTION_EXPIRY).apply()
+        }
+
+        val effectivePromo = if (promoExpiry > now) promoExpiry else 0L
+        val effectiveTrial = if (trialExpiry > now) trialExpiry else 0L
+        val isLifetime = subPlan == "lifetime" || promoCode == "LIFETIME" || promoCode == "PROFOUNDER"
+        val effectiveSub = if (isLifetime) Long.MAX_VALUE else if (subExpiry > now) subExpiry else 0L
+
+        val activeExpiry = if (isLifetime) Long.MAX_VALUE else maxOf(effectivePromo, effectiveTrial, effectiveSub)
 
         if (activeExpiry > now) {
             val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-            val formattedDate = sdf.format(Date(activeExpiry))
-            val isPromo = promoExpiry > now && promoExpiry == activeExpiry
-            val isTrial = trialExpiry > now && trialExpiry == activeExpiry
-            val isLifetime = subPlan == "lifetime" || promoCode == "LIFETIME" || promoCode == "PROFOUNDER"
+            val formattedDate = if (isLifetime) "Never" else sdf.format(Date(activeExpiry))
+            val isPromo = effectivePromo > now && effectivePromo == activeExpiry
+            val isTrial = effectiveTrial > now && effectiveTrial == activeExpiry
 
             val activeLabel = when {
                 isPromo -> "Promo Code: $promoCode"
@@ -248,24 +282,39 @@ class SubscriptionService(private val context: Context) {
             _subscriptionState.value = _subscriptionState.value.copy(
                 isPro = true,
                 expirationDateFormatted = formattedDate,
-                expirationTimestamp = activeExpiry,
+                expirationTimestamp = if (isLifetime) 0L else activeExpiry,
                 activeProductIdentifier = activeLabel,
                 planType = if (isPromo) "promo" else if (isTrial) "trial" else (subPlan ?: "annual"),
                 remainingDays = remainingDays,
                 remainingMonths = remainingMonths,
                 durationSummary = durationSummary,
-                dailyAiLimit = PRO_DAILY_AI_LIMIT,
+                dailyAiLimit = PRO_DAILY_AI_LIMIT, // 200 daily AI runs for any Pro plan / 14-day trial
                 isPromoActive = isPromo,
-                activePromoCode = promoCode,
+                activePromoCode = if (isPromo) promoCode else null,
                 linkedEmail = linkedEmail,
                 customerId = linkedUid ?: linkedEmail,
                 willRenew = !isPromo && !isLifetime,
                 isSandbox = true
             )
-        } else if (linkedEmail != null) {
-            _subscriptionState.value = _subscriptionState.value.copy(
+        } else {
+            // Free Tier / All trials shut down: exactly 3 daily AI runs across all tabs
+            val hadTrial = (trialExpiry > 0L && trialExpiry <= now) || (promoExpiry > 0L && promoExpiry <= now)
+            _subscriptionState.value = SproutSubscriptionState(
+                isPro = false,
+                expirationDateFormatted = null,
+                expirationTimestamp = 0L,
+                activeProductIdentifier = null,
+                planType = null,
+                remainingDays = 0,
+                remainingMonths = 0,
+                durationSummary = if (hadTrial) "Trial Expired" else "",
+                dailyAiLimit = 3, // strictly 3 AI runs for no pro plan user
+                isPromoActive = false,
+                activePromoCode = null,
                 linkedEmail = linkedEmail,
-                customerId = linkedUid ?: linkedEmail
+                customerId = linkedUid ?: linkedEmail,
+                willRenew = false,
+                isSandbox = false
             )
         }
     }
@@ -329,7 +378,7 @@ class SubscriptionService(private val context: Context) {
 
             override fun onError(error: PurchasesError) {
                 _isLoading.value = false
-                Log.w(TAG, "Error fetching customer info: ${error.message}")
+                Log.i(TAG, "Customer info fetch: ${error.code} (${error.message})")
             }
         })
     }
@@ -348,7 +397,7 @@ class SubscriptionService(private val context: Context) {
             }
 
             override fun onError(error: PurchasesError) {
-                Log.w(TAG, "Error fetching offerings: ${error.message}")
+                Log.i(TAG, "Offerings not yet configured or device billing offline: ${error.code} (${error.message})")
             }
         })
     }
@@ -471,7 +520,7 @@ class SubscriptionService(private val context: Context) {
             remainingDays = remainingDays,
             remainingMonths = remainingMonths,
             durationSummary = durationSummary,
-            dailyAiLimit = PRO_DAILY_AI_LIMIT,
+            dailyAiLimit = if (isProActive) PRO_DAILY_AI_LIMIT else 3,
             willRenew = willRenew,
             isSandbox = isSandbox,
             isPromoActive = promoExpiry > now,
@@ -633,6 +682,7 @@ class SubscriptionService(private val context: Context) {
      * Checks if the 14-day free trial is currently actively running.
      */
     fun isTrialActive(): Boolean {
+        checkLocalPromoOrTrialStatus()
         val trialExpiry = prefs.getLong(KEY_TRIAL_EXPIRY, 0L)
         return trialExpiry > System.currentTimeMillis()
     }
@@ -831,7 +881,13 @@ class SubscriptionService(private val context: Context) {
         onError: (String) -> Unit
     ) {
         if (!Purchases.isConfigured) {
-            onError("Purchases SDK is not initialized")
+            checkLocalPromoOrTrialStatus()
+            val isPro = _subscriptionState.value.isPro
+            if (isPro) {
+                onSuccess(true)
+            } else {
+                onError("No active Google Play subscription found on this device.")
+            }
             return
         }
 
@@ -846,9 +902,14 @@ class SubscriptionService(private val context: Context) {
 
             override fun onError(error: PurchasesError) {
                 _isLoading.value = false
-                val msg = mapErrorCodeToString(error)
-                _lastErrorMessage.value = msg
-                onError(msg)
+                checkLocalPromoOrTrialStatus()
+                if (_subscriptionState.value.isPro) {
+                    onSuccess(true)
+                } else {
+                    val msg = mapErrorCodeToString(error)
+                    _lastErrorMessage.value = msg
+                    onError(msg)
+                }
             }
         })
     }

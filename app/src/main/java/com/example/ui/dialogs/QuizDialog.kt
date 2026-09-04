@@ -12,11 +12,14 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Lightbulb
+import androidx.compose.material.icons.outlined.Whatshot
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
@@ -47,9 +50,10 @@ fun QuizDialog(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
+                .shadow(12.dp, RoundedCornerShape(24.dp), spotColor = SproutInk.copy(alpha = 0.2f))
                 .clip(RoundedCornerShape(24.dp))
-                .border(2.dp, SproutInk, RoundedCornerShape(24.dp)),
-            color = SproutInk
+                .border(1.5.dp, SproutLine.copy(alpha = 0.45f), RoundedCornerShape(24.dp)),
+            color = SproutPaperCard
         ) {
             Column(
                 modifier = Modifier
@@ -65,8 +69,8 @@ fun QuizDialog(
                 ) {
                     Surface(
                         shape = RoundedCornerShape(100.dp),
-                        color = Color(0x1FFAF6E9),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0x3DFAF6E9))
+                        color = Color(0xFFFEF3C7),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFFDE68A))
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
@@ -74,10 +78,10 @@ fun QuizDialog(
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.AutoAwesome,
+                                imageVector = Icons.Outlined.Whatshot,
                                 contentDescription = null,
-                                tint = SproutCitrus,
-                                modifier = Modifier.size(12.dp)
+                                tint = Color(0xFFD97706),
+                                modifier = Modifier.size(13.dp)
                             )
                             Text(
                                 text = "${currentStreak}-day streak",
@@ -85,7 +89,7 @@ fun QuizDialog(
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = SproutCitrus,
+                                    color = Color(0xFFB45309),
                                     textAlign = TextAlign.Center
                                 )
                             )
@@ -96,7 +100,7 @@ fun QuizDialog(
                         onClick = onDismiss,
                         modifier = Modifier.size(28.dp)
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SproutPaper)
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SproutInkMuted)
                     }
                 }
 
@@ -105,10 +109,10 @@ fun QuizDialog(
                 // Mystery Icon
                 Box(
                     modifier = Modifier
-                        .size(84.dp)
+                        .size(80.dp)
                         .clip(CircleShape)
-                        .background(if (isSubmitted && isCorrect) SproutLeafLight else Color(0x1AFAF6E9))
-                        .border(1.5.dp, SproutCitrus, CircleShape),
+                        .background(if (isSubmitted && isCorrect) Color(0xFFDCFCE7) else Color(0xFFF0FDF4))
+                        .border(1.5.dp, if (isSubmitted && isCorrect) GenZElectricEmerald else GenZCyberGreen.copy(alpha = 0.5f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     if (isSubmitted) {
@@ -116,7 +120,7 @@ fun QuizDialog(
                             symbolId = question.symbolId,
                             archetype = question.archetype,
                             name = question.specimenName,
-                            size = 68.dp
+                            size = 56.dp
                         )
                     } else {
                         Text(
@@ -124,8 +128,8 @@ fun QuizDialog(
                             style = TextStyle(
                                 fontFamily = FontFamily.Monospace,
                                 fontSize = 36.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = SproutCitrus
+                                fontWeight = FontWeight.Black,
+                                color = GenZDarkForest
                             )
                         )
                     }
@@ -135,15 +139,15 @@ fun QuizDialog(
 
                 EyebrowHeader(
                     text = "Daily Specimen · ${question.dateString}",
-                    color = SproutCitrus
+                    color = GenZDarkForest
                 )
 
                 Text(
-                    text = if (isSubmitted && isCorrect) "You nailed it!" else if (isSubmitted) "Good try!" else "Guess it before we name it.",
+                    text = if (isSubmitted && isCorrect) "You nailed it!" else if (isSubmitted) "Good try!" else "Guess the mystery produce",
                     style = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = SproutPaper,
+                        color = SproutInk,
                         textAlign = TextAlign.Center
                     ),
                     modifier = Modifier.padding(top = 4.dp)
@@ -156,8 +160,8 @@ fun QuizDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0x14FAF6E9))
-                        .border(1.dp, Color(0x28FAF6E9), RoundedCornerShape(14.dp))
+                        .background(Color(0xFFF4FBF6))
+                        .border(1.dp, Color(0xFFD1FAE5), RoundedCornerShape(14.dp))
                         .padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -172,15 +176,15 @@ fun QuizDialog(
                                     fontFamily = FontFamily.Monospace,
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = SproutCitrus
+                                    color = GenZDarkForest
                                 )
                             )
                             Text(
                                 text = clue,
                                 style = TextStyle(
-                                    fontSize = 11.5.sp,
-                                    color = Color(0xFFCDD6C4),
-                                    lineHeight = 16.sp
+                                    fontSize = 12.sp,
+                                    color = SproutInkSoft,
+                                    lineHeight = 16.5.sp
                                 )
                             )
                         }
@@ -201,19 +205,25 @@ fun QuizDialog(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(if (isSelected) SproutCitrus else SproutPaperCard)
-                                    .border(1.2.dp, if (isSelected) SproutCitrus else SproutPaperCard, RoundedCornerShape(12.dp))
+                                    .background(
+                                        if (isSelected) GenZDarkForest else Color.White
+                                    )
+                                    .border(
+                                        1.2.dp,
+                                        if (isSelected) GenZDarkForest else SproutLine.copy(alpha = 0.4f),
+                                        RoundedCornerShape(12.dp)
+                                    )
                                     .clickable { selectedIndex = idx }
-                                    .padding(vertical = 11.dp, horizontal = 16.dp)
+                                    .padding(vertical = 12.dp, horizontal = 16.dp)
                                     .testTag("quiz_option_$idx"),
                                 contentAlignment = Alignment.CenterStart
                             ) {
                                 Text(
                                     text = opt,
                                     style = TextStyle(
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = SproutInk
+                                        fontSize = 13.5.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) Color.White else SproutInk
                                     )
                                 )
                             }
@@ -239,8 +249,10 @@ fun QuizDialog(
                             .testTag("submit_guess_btn"),
                         shape = RoundedCornerShape(100.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = SproutCitrus,
-                            contentColor = SproutInk
+                            containerColor = Color(0xFF047857),
+                            contentColor = Color.White,
+                            disabledContainerColor = Color(0xFFE5E7EB),
+                            disabledContentColor = Color(0xFF9CA3AF)
                         )
                     ) {
                         Text(
@@ -259,21 +271,21 @@ fun QuizDialog(
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text(
-                            text = if (isCorrect) "It is indeed the ${question.specimenName}!" else "Not quite! It was the ${question.specimenName}.",
+                            text = if (isCorrect) "🎉 Correct! It's ${question.specimenName}!" else "Not quite! It was ${question.specimenName}.",
                             style = TextStyle(
-                                fontSize = 14.sp,
+                                fontSize = 14.5.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isCorrect) Color(0xFF90C27A) else SproutTomato
+                                color = if (isCorrect) Color(0xFF047857) else Color(0xFFDC2626)
                             )
                         )
 
                         Text(
                             text = question.funFact,
                             style = TextStyle(
-                                fontSize = 11.5.sp,
-                                color = Color(0xFFCDD6C4),
+                                fontSize = 12.sp,
+                                color = SproutInkSoft,
                                 textAlign = TextAlign.Center,
-                                lineHeight = 16.sp
+                                lineHeight = 16.5.sp
                             )
                         )
 
@@ -289,8 +301,8 @@ fun QuizDialog(
                                     },
                                     modifier = Modifier.weight(1f).height(44.dp),
                                     shape = RoundedCornerShape(100.dp),
-                                    border = androidx.compose.foundation.BorderStroke(1.2.dp, SproutCitrus),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = SproutCitrus)
+                                    border = androidx.compose.foundation.BorderStroke(1.2.dp, Color(0xFF047857)),
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF047857))
                                 ) {
                                     Text("Open Guide", fontWeight = FontWeight.Bold, fontSize = 12.5.sp)
                                 }
@@ -301,7 +313,7 @@ fun QuizDialog(
                                 modifier = Modifier.weight(1f).height(44.dp).testTag("continue_quiz_btn"),
                                 shape = RoundedCornerShape(100.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isCorrect) SproutLeaf else SproutTomato,
+                                    containerColor = if (isCorrect) Color(0xFF047857) else Color(0xFFDC2626),
                                     contentColor = Color.White
                                 )
                             ) {

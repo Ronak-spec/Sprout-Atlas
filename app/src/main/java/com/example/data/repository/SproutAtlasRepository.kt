@@ -109,10 +109,10 @@ class SproutAtlasRepository(private val context: android.content.Context? = null
 
     companion object {
         const val FREE_DAILY_LABS_LIMIT = 3
-        const val PRO_DAILY_LABS_LIMIT = 500
+        const val PRO_DAILY_LABS_LIMIT = 200
     }
 
-    // Daily Labs Usage (3 runs/day for Free users; 500 runs/day for Pro users)
+    // Daily Labs Usage (3 runs/day for Free users; 200 runs/day for Pro users)
     private val _dailyLabsUsage = MutableStateFlow(
         prefs?.getInt("labs_usage_${java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())}", 0) ?: 0
     )

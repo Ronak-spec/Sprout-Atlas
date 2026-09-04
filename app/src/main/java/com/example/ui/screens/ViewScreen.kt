@@ -29,6 +29,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.testTag
@@ -97,8 +98,12 @@ fun ViewScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SproutPaper.copy(alpha = 0.96f))
-                .border(width = 1.3.dp, color = SproutLine.copy(alpha = 0.1f))
+                .background(SproutPaperCard)
+                .border(
+                    width = 1.2.dp,
+                    color = SproutLine.copy(alpha = 0.35f),
+                    shape = androidx.compose.ui.graphics.RectangleShape
+                )
                 .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
             Row(

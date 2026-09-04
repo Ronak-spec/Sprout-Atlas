@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
@@ -52,17 +53,20 @@ fun SproutTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .testTag("sprout_top_bar"),
-        color = SproutPaper.copy(alpha = 0.94f)
+        color = Color.White,
+        shadowElevation = 1.dp
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(Color.White)
                 .border(
                     width = 1.dp,
-                    color = SproutInk.copy(alpha = 0.12f)
+                    color = Color(0xFFE8EAED),
+                    shape = androidx.compose.ui.graphics.RectangleShape
                 )
                 .statusBarsPadding()
-                .padding(horizontal = 14.dp, vertical = 9.dp)
+                .padding(horizontal = 16.dp, vertical = 9.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -72,7 +76,7 @@ fun SproutTopBar(
                 // Left: Back button (if active) + Sprout Vector Logo + Brand Name
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier
                         .weight(1f, fill = false)
                         .clickable { onLogoClick() }
@@ -83,43 +87,51 @@ fun SproutTopBar(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(CircleShape)
-                                .background(SproutInk.copy(alpha = 0.06f))
+                                .background(Color(0xFFF1F3F4))
                                 .testTag("top_bar_back_btn")
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                                 contentDescription = "Back",
                                 tint = SproutInk,
-                                modifier = Modifier.size(22.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
 
-                    // Green sprout vector logo (extra enlarged for prominent brand presence)
-                    ProduceDoodle(
-                        symbolId = "d-sprout",
-                        archetype = "leafy",
-                        name = "Sprout",
-                        size = 42.dp
-                    )
+                    // Green sprout vector logo in clean Google squircle badge
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFFE6F4EA)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ProduceDoodle(
+                            symbolId = "d-sprout",
+                            archetype = "leafy",
+                            name = "Sprout",
+                            size = 32.dp
+                        )
+                    }
 
-                    // Brand Name in bold serif font (more enlarged & prominent)
+                    // Brand Name in bold modern Google aesthetic
                     Text(
                         text = buildAnnotatedString {
                             append("Sprout ")
                             withStyle(
                                 SpanStyle(
                                     color = SproutLeaf,
-                                    fontStyle = FontStyle.Italic
+                                    fontWeight = FontWeight.Black
                                 )
                             ) {
                                 append("Atlas")
                             }
                         },
                         style = TextStyle(
-                            fontFamily = FontFamily.Serif,
+                            fontFamily = NunitoFontFamily,
                             fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.ExtraBold,
                             letterSpacing = (-0.4).sp,
                             color = SproutInk
                         ),
@@ -127,57 +139,57 @@ fun SproutTopBar(
                     )
                 }
 
-                // Right: [PRO Button] -> [Daily Quiz Button] -> [Tour Option Button] -> [Profile Picture (Right End)]
+                // Right: [PRO Button] -> [Daily Quiz Button] -> [Profile Picture]
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // PRO Button / Status Indicator
                     if (onProClick != null) {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(100.dp))
-                                .background(if (isPro) Color(0xFFEAF2E6) else Color(0xFFA5182F))
+                                .background(if (isPro) Color(0xFFE6F4EA) else Color(0xFFFEF7E0))
                                 .border(
                                     width = 1.dp,
-                                    color = if (isPro) SproutLeaf else Color(0xFF711021),
+                                    color = if (isPro) Color(0xFFCEEAD6) else Color(0xFFFEEFC3),
                                     shape = RoundedCornerShape(100.dp)
                                 )
                                 .clickable { onProClick() }
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .padding(horizontal = 9.dp, vertical = 5.dp)
                                 .testTag("top_bar_pro_btn"),
                             contentAlignment = Alignment.Center
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
                                 Icon(
                                     imageVector = if (isPro) Icons.Filled.Check else Icons.Filled.Star,
                                     contentDescription = "Sprout Atlas Pro",
-                                    tint = if (isPro) SproutLeafDark else Color.White,
+                                    tint = if (isPro) Color(0xFF137333) else Color(0xFFB06000),
                                     modifier = Modifier.size(13.dp)
                                 )
                                 Text(
-                                    text = if (isPro) "PRO" else "UPGRADE",
+                                    text = if (isPro) "PRO" else "PRO",
                                     style = TextStyle(
-                                        fontFamily = FontFamily.Monospace,
-                                        fontSize = 10.5.sp,
+                                        fontFamily = NunitoFontFamily,
+                                        fontSize = 11.sp,
                                         fontWeight = FontWeight.ExtraBold,
-                                        letterSpacing = 0.5.sp,
-                                        color = if (isPro) SproutLeafDark else Color.White
+                                        letterSpacing = 0.4.sp,
+                                        color = if (isPro) Color(0xFF137333) else Color(0xFFB06000)
                                     )
                                 )
                             }
                         }
                     }
 
-                    // 1. Daily Quiz status indicator icon
+                    // Daily Quiz status indicator icon
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(100.dp))
-                            .background(SproutLeaf.copy(alpha = 0.12f))
-                            .border(width = 1.dp, color = SproutLeaf.copy(alpha = 0.25f), shape = RoundedCornerShape(100.dp))
+                            .background(Color(0xFFF1F3F4))
+                            .border(width = 1.dp, color = Color(0xFFE8EAED), shape = RoundedCornerShape(100.dp))
                             .clickable { onNotificationClick() }
                             .padding(horizontal = 8.dp, vertical = 5.dp)
                             .testTag("top_bar_status_btn"),
@@ -196,14 +208,14 @@ fun SproutTopBar(
                             Icon(
                                 imageVector = Icons.Outlined.Notifications,
                                 contentDescription = "Daily Quiz & Alerts",
-                                tint = SproutInk,
+                                tint = SproutInkSoft,
                                 modifier = Modifier.size(16.dp)
                             )
                             if (quizStreak > 0) {
                                 Text(
                                     text = "${quizStreak}d",
                                     style = TextStyle(
-                                        fontFamily = FontFamily.Default,
+                                        fontFamily = NunitoFontFamily,
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = SproutInk
@@ -218,10 +230,10 @@ fun SproutTopBar(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(CircleShape)
-                            .background(if (isAuthenticated) SproutLeaf else SproutPaperCard)
+                            .background(if (isAuthenticated) Color(0xFFE6F4EA) else Color(0xFFF1F3F4))
                             .border(
                                 width = 1.2.dp,
-                                color = if (isAuthenticated) SproutLeafDark else SproutInk.copy(alpha = 0.22f),
+                                color = if (isAuthenticated) SproutLeaf else Color(0xFFDADCE0),
                                 shape = CircleShape
                             )
                             .clickable { onAccountClick() }
@@ -244,17 +256,17 @@ fun SproutTopBar(
                             Text(
                                 text = initial,
                                 style = TextStyle(
-                                    fontFamily = FontFamily.Default,
+                                    fontFamily = NunitoFontFamily,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = SproutLeaf
                                 )
                             )
                         } else {
                             Icon(
                                 imageVector = Icons.Outlined.Person,
                                 contentDescription = "Account & Sign In",
-                                tint = SproutInk,
+                                tint = SproutInkSoft,
                                 modifier = Modifier.size(18.dp)
                             )
                         }

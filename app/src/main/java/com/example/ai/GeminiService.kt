@@ -192,7 +192,7 @@ class GeminiService {
             }
 
             val respJson = executeGeminiJsonCall("gemini-2.5-flash", jsonBody)
-                ?: executeGeminiJsonCall("gemini-1.5-flash", jsonBody)
+                ?: executeGeminiJsonCall("gemini-flash-latest", jsonBody)
 
             if (respJson != null) {
                 val candidates = respJson.optJSONArray("candidates")
@@ -291,7 +291,7 @@ class GeminiService {
             }
 
             val respJson = executeGeminiJsonCall("gemini-2.5-flash", jsonBody)
-                ?: executeGeminiJsonCall("gemini-1.5-flash", jsonBody)
+                ?: executeGeminiJsonCall("gemini-flash-latest", jsonBody)
 
             if (respJson != null) {
                 val candidates = respJson.optJSONArray("candidates")
@@ -486,7 +486,7 @@ class GeminiService {
             }
 
             val respJson = executeGeminiJsonCall("gemini-2.5-flash", jsonBody)
-                ?: executeGeminiJsonCall("gemini-1.5-flash", jsonBody)
+                ?: executeGeminiJsonCall("gemini-flash-latest", jsonBody)
 
             if (respJson != null) {
                 val candidates = respJson.optJSONArray("candidates")

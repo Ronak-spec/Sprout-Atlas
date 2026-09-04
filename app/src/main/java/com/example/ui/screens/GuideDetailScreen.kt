@@ -63,6 +63,7 @@ fun GuideDetailScreen(
 
     val isIdentifyLocked = subscriptionService?.isGuideTabLocked(1) ?: false
     val isChemicalsLocked = subscriptionService?.isGuideTabLocked(2) ?: false
+    val isFullVisibility = subscriptionService?.isFullGuideVisibilityActive() ?: true
     val isDay1Preview = subscriptionService?.isFirstDayGracePeriodActive() ?: false
     val hoursRemaining = subscriptionService?.getFirstDayRemainingHours() ?: 0
     val isProUser = subscriptionService?.subscriptionState?.collectAsState()?.value?.isPro ?: false
@@ -72,6 +73,12 @@ fun GuideDetailScreen(
     // 1 -> Freshness Identification & Washing Protocol
     // 2 -> Chemical Treatments & Safety
     var selectedTab by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(isFullVisibility) {
+        if (!isFullVisibility && selectedTab != 0) {
+            selectedTab = 0
+        }
+    }
 
     val relatedItems = remember(item) {
         ProduceCatalog.getRelated(item, count = 4)
@@ -291,49 +298,107 @@ fun GuideDetailScreen(
                         .border(1.3.dp, SproutLine.copy(alpha = 0.28f), RoundedCornerShape(16.dp))
                         .padding(4.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
+                    if (isFullVisibility) {
+                        // All 3 tabs visible during 24-hr preview or with Pro
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            GuideTabButton(
+                                selected = selectedTab == 0,
+                                title = "Information",
+                                subtitle = "Nutrients & Profile",
+                                icon = Icons.Outlined.Eco,
+                                isLocked = false,
+                                modifier = Modifier.weight(1f),
+                                onClick = { selectedTab = 0 }
+                            )
+                            GuideTabButton(
+                                selected = selectedTab == 1,
+                                title = "Identify & Wash",
+                                subtitle = "Ripeness & Hygiene",
+                                icon = Icons.Outlined.WaterDrop,
+                                isLocked = false,
+                                modifier = Modifier.weight(1f),
+                                onClick = { selectedTab = 1 }
+                            )
+                            GuideTabButton(
+                                selected = selectedTab == 2,
+                                title = "Chemicals",
+                                subtitle = "Treatments & Safety",
+                                icon = Icons.Outlined.Shield,
+                                isLocked = false,
+                                modifier = Modifier.weight(1f),
+                                onClick = { selectedTab = 2 }
+                            )
+                        }
+                    } else {
+                        // After 24 hrs for free users: strictly only 1 tab is visible
                         GuideTabButton(
-                            selected = selectedTab == 0,
+                            selected = true,
                             title = "Information",
-                            subtitle = "Nutrients & Profile",
+                            subtitle = "Nutrients & Botanical Profile • 1 of 1 Tab Visible",
                             icon = Icons.Outlined.Eco,
                             isLocked = false,
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.fillMaxWidth(),
                             onClick = { selectedTab = 0 }
                         )
-                        GuideTabButton(
-                            selected = selectedTab == 1,
-                            title = "Identify & Wash",
-                            subtitle = if (isIdentifyLocked) "🔒 Pro Only" else "Ripeness & Hygiene",
-                            icon = if (isIdentifyLocked) Icons.Filled.Lock else Icons.Outlined.WaterDrop,
-                            isLocked = isIdentifyLocked,
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                if (isIdentifyLocked) {
-                                    onOpenPaywall?.invoke()
-                                } else {
-                                    selectedTab = 1
+                    }
+                }
+
+                // If only 1 tab visible, display locked tab upsell banner
+                if (!isFullVisibility) {
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = SproutPaperCard,
+                        border = androidx.compose.foundation.BorderStroke(1.2.dp, SproutCitrus.copy(alpha = 0.35f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onOpenPaywall?.invoke() }
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Lock,
+                                        contentDescription = null,
+                                        tint = SproutCitrus,
+                                        modifier = Modifier.size(15.dp)
+                                    )
+                                    Text(
+                                        text = "2 Tabs Locked (Identify & Wash, Chemicals)",
+                                        style = TextStyle(
+                                            fontFamily = FontFamily.Default,
+                                            fontSize = 12.5.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = SproutInk
+                                        )
+                                    )
                                 }
+                                Text(
+                                    text = "24-hr preview complete. Start 14-Day Free Trial to unlock all tabs.",
+                                    style = TextStyle(
+                                        fontSize = 11.5.sp,
+                                        color = SproutInkSoft
+                                    )
+                                )
                             }
-                        )
-                        GuideTabButton(
-                            selected = selectedTab == 2,
-                            title = "Chemicals",
-                            subtitle = if (isChemicalsLocked) "🔒 Pro Only" else "Treatments & Safety",
-                            icon = if (isChemicalsLocked) Icons.Filled.Lock else Icons.Outlined.Shield,
-                            isLocked = isChemicalsLocked,
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                if (isChemicalsLocked) {
-                                    onOpenPaywall?.invoke()
-                                } else {
-                                    selectedTab = 2
-                                }
+                            Button(
+                                onClick = { onOpenPaywall?.invoke() },
+                                colors = ButtonDefaults.buttonColors(containerColor = SproutLeafDark),
+                                shape = RoundedCornerShape(10.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                            ) {
+                                Text("Unlock", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = SproutPaper)
                             }
-                        )
+                        }
                     }
                 }
             }

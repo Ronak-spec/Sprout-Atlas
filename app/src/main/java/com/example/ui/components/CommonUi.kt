@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.testTag
@@ -38,7 +39,7 @@ import com.example.ui.theme.*
 fun EyebrowHeader(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = SproutLeafDark
+    color: Color = SproutLeaf
 ) {
     Row(
         modifier = modifier,
@@ -47,17 +48,17 @@ fun EyebrowHeader(
     ) {
         Box(
             modifier = Modifier
-                .width(14.dp)
-                .height(1.5.dp)
+                .size(6.dp)
+                .clip(CircleShape)
                 .background(color)
         )
         Text(
             text = text.uppercase(),
             style = TextStyle(
-                fontFamily = FontFamily.Monospace,
-                fontSize = 10.sp,
+                fontFamily = NunitoFontFamily,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 1.2.sp,
+                letterSpacing = 1.1.sp,
                 color = color
             )
         )
@@ -68,34 +69,35 @@ fun EyebrowHeader(
 fun SearchPacket(
     query: String,
     onQueryChange: (String) -> Unit,
-    placeholder: String = "Search — typos okay",
+    placeholder: String = "Search avocado, kale, citrus...",
     modifier: Modifier = Modifier,
     showTypoBadge: Boolean = false,
     isLarge: Boolean = false
 ) {
     val horizontalPad = if (isLarge) 16.dp else 14.dp
-    val verticalPad = if (isLarge) 14.dp else 10.dp
-    val cornerRadius = if (isLarge) 16.dp else 14.dp
-    val iconSize = if (isLarge) 22.dp else 18.dp
-    val textSize = if (isLarge) 16.sp else 14.sp
-    val minHeight = if (isLarge) 54.dp else 44.dp
+    val verticalPad = if (isLarge) 12.dp else 10.dp
+    val cornerRadius = 100.dp
+    val iconSize = if (isLarge) 20.dp else 18.dp
+    val textSize = if (isLarge) 15.sp else 14.sp
+    val minHeight = if (isLarge) 52.dp else 46.dp
 
     Box(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = minHeight)
+                .shadow(2.dp, RoundedCornerShape(cornerRadius), spotColor = Color(0x1A000000))
                 .clip(RoundedCornerShape(cornerRadius))
-                .background(SproutPaperCard)
-                .border(if (isLarge) 1.6.dp else 1.4.dp, SproutInk, RoundedCornerShape(cornerRadius))
+                .background(Color.White)
+                .border(1.dp, Color(0xFFE8EAED), RoundedCornerShape(cornerRadius))
                 .padding(horizontal = horizontalPad, vertical = verticalPad),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(if (isLarge) 12.dp else 10.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = SproutInkSoft,
+                tint = SproutLeaf,
                 modifier = Modifier.size(iconSize)
             )
             BasicTextField(
@@ -108,15 +110,17 @@ fun SearchPacket(
                 textStyle = TextStyle(
                     fontSize = textSize,
                     color = SproutInk,
-                    fontFamily = FontFamily.Default
+                    fontFamily = NunitoFontFamily,
+                    fontWeight = FontWeight.Medium
                 ),
-                cursorBrush = SolidColor(SproutInk),
+                cursorBrush = SolidColor(SproutLeaf),
                 decorationBox = { innerTextField ->
                     if (query.isEmpty()) {
                         Text(
                             text = placeholder,
                             color = SproutInkMuted,
-                            fontSize = textSize
+                            fontSize = textSize,
+                            fontFamily = NunitoFontFamily
                         )
                     }
                     innerTextField()
@@ -125,20 +129,17 @@ fun SearchPacket(
             if (query.isNotEmpty()) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(100.dp))
-                        .background(SproutPaper)
-                        .border(1.dp, SproutInk.copy(alpha = 0.2f), RoundedCornerShape(100.dp))
-                        .clickable { onQueryChange("") }
-                        .padding(horizontal = if (isLarge) 10.dp else 8.dp, vertical = if (isLarge) 5.dp else 4.dp),
+                        .size(26.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFF1F3F4))
+                        .clickable { onQueryChange("") },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "clear",
-                        style = TextStyle(
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = if (isLarge) 11.sp else 10.sp,
-                            color = SproutInkSoft
-                        )
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Clear",
+                        tint = SproutInkSoft,
+                        modifier = Modifier.size(14.dp)
                     )
                 }
             }
@@ -147,20 +148,19 @@ fun SearchPacket(
         if (showTypoBadge) {
             Box(
                 modifier = Modifier
-                    .offset(x = 18.dp, y = if (isLarge) (-12).dp else (-11).dp)
-                    .rotate(-3f)
+                    .offset(x = 18.dp, y = (-10).dp)
                     .clip(RoundedCornerShape(100.dp))
-                    .background(SproutCitrus)
-                    .border(1.2.dp, SproutInk, RoundedCornerShape(100.dp))
-                    .padding(horizontal = 9.dp, vertical = 2.5.dp)
+                    .background(Color(0xFFFEF7E0))
+                    .border(1.dp, Color(0xFFFEEFC3), RoundedCornerShape(100.dp))
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
                 Text(
-                    text = "even with typos ✓",
+                    text = "typos supported ✓",
                     style = TextStyle(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = if (isLarge) 10.sp else 9.sp,
+                        fontFamily = NunitoFontFamily,
+                        fontSize = 9.5.sp,
                         fontWeight = FontWeight.Bold,
-                        color = SproutInk
+                        color = Color(0xFFB06000)
                     )
                 )
             }
@@ -180,41 +180,45 @@ fun FilterChipScroll(
         modifier = modifier
             .fillMaxWidth()
             .horizontalScroll(scrollState),
-        horizontalArrangement = Arrangement.spacedBy(7.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         categories.forEach { cat ->
             val isActive = cat == activeCategory
-            val dotColor = Color(ProduceCatalog.categoryColors[cat] ?: 0xFF233022)
-            Row(
+            val dotColor = Color(ProduceCatalog.categoryColors[cat] ?: 0xFF137333)
+            Surface(
+                shape = RoundedCornerShape(100.dp),
+                color = if (isActive) Color(0xFFE6F4EA) else Color.White,
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    if (isActive) Color(0xFFCEEAD6) else Color(0xFFE8EAED)
+                ),
+                shadowElevation = if (isActive) 0.dp else 0.5.dp,
                 modifier = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(if (isActive) SproutInk else SproutPaperCard)
-                    .border(
-                        1.2.dp,
-                        if (isActive) SproutInk else SproutInk.copy(alpha = 0.22f),
-                        RoundedCornerShape(100.dp)
-                    )
                     .clickable { onCategorySelected(cat) }
-                    .padding(horizontal = 13.dp, vertical = 7.dp)
-                    .testTag("filter_chip_$cat"),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    .testTag("filter_chip_$cat")
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(if (cat == "All" && isActive) SproutCitrus else dotColor)
-                )
-                Text(
-                    text = cat,
-                    style = TextStyle(
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = if (isActive) SproutPaper else SproutInk
+                Row(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(7.dp)
+                            .clip(CircleShape)
+                            .background(if (isActive) SproutLeaf else dotColor)
                     )
-                )
+                    Text(
+                        text = cat,
+                        style = TextStyle(
+                            fontFamily = NunitoFontFamily,
+                            fontSize = 12.sp,
+                            fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium,
+                            color = if (isActive) Color(0xFF137333) else SproutInkSoft
+                        )
+                    )
+                }
             }
         }
     }
@@ -348,9 +352,9 @@ fun CorkboardPin(
                     .fillMaxWidth()
                     .padding(top = 8.dp, bottom = 8.dp, start = 6.dp, end = 6.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                // Photo display frame
+                // Photo display frame with subtle inner tint
                 Box(
                     modifier = Modifier
                         .size(size)
@@ -452,42 +456,52 @@ fun SproutBottomBar(
     onTabSelected: (String) -> Unit
 ) {
     Surface(
-        color = SproutPaper.copy(alpha = 0.96f),
-        border = androidx.compose.foundation.BorderStroke(1.3.dp, SproutLine.copy(alpha = 0.25f)),
+        color = Color.Transparent,
         shadowElevation = 8.dp
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 6.dp, horizontal = 8.dp)
-                .navigationBarsPadding(),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
+                .background(SproutPaperCard)
+                .border(
+                    width = 1.2.dp,
+                    color = SproutLine.copy(alpha = 0.35f),
+                    shape = androidx.compose.ui.graphics.RectangleShape
+                )
         ) {
-            BottomTabItem(
-                title = "Pulse",
-                selected = currentTab == "home",
-                icon = { Icon(Icons.Outlined.GraphicEq, contentDescription = "Pulse", modifier = Modifier.size(28.dp)) },
-                onClick = { onTabSelected("home") }
-            )
-            BottomTabItem(
-                title = "Explore",
-                selected = currentTab == "explore",
-                icon = { Icon(Icons.Outlined.TravelExplore, contentDescription = "Explore", modifier = Modifier.size(28.dp)) },
-                onClick = { onTabSelected("explore") }
-            )
-            BottomTabItem(
-                title = "Labs",
-                selected = currentTab == "labs",
-                icon = { Icon(Icons.Outlined.Science, contentDescription = "Labs", modifier = Modifier.size(28.dp)) },
-                onClick = { onTabSelected("labs") }
-            )
-            BottomTabItem(
-                title = "View",
-                selected = currentTab == "view",
-                icon = { Icon(Icons.Outlined.Visibility, contentDescription = "View", modifier = Modifier.size(28.dp)) },
-                onClick = { onTabSelected("view") }
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp, horizontal = 12.dp)
+                    .navigationBarsPadding(),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BottomTabItem(
+                    title = "Pulse",
+                    selected = currentTab == "home",
+                    icon = { Icon(Icons.Outlined.GraphicEq, contentDescription = "Pulse", modifier = Modifier.size(24.dp)) },
+                    onClick = { onTabSelected("home") }
+                )
+                BottomTabItem(
+                    title = "Explore",
+                    selected = currentTab == "explore",
+                    icon = { Icon(Icons.Outlined.TravelExplore, contentDescription = "Explore", modifier = Modifier.size(24.dp)) },
+                    onClick = { onTabSelected("explore") }
+                )
+                BottomTabItem(
+                    title = "Labs",
+                    selected = currentTab == "labs",
+                    icon = { Icon(Icons.Outlined.Science, contentDescription = "Labs", modifier = Modifier.size(24.dp)) },
+                    onClick = { onTabSelected("labs") }
+                )
+                BottomTabItem(
+                    title = "View",
+                    selected = currentTab == "view",
+                    icon = { Icon(Icons.Outlined.Visibility, contentDescription = "View", modifier = Modifier.size(24.dp)) },
+                    onClick = { onTabSelected("view") }
+                )
+            }
         }
     }
 }
@@ -500,16 +514,36 @@ private fun BottomTabItem(
     onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .clip(RoundedCornerShape(10.dp))
-            .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 4.dp)
-            .testTag("tab_$title"),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 10.dp, vertical = 4.dp)
+            .testTag("tab_$title")
     ) {
-        CompositionLocalProvider(LocalContentColor provides if (selected) SproutLeaf else SproutInkSoft) {
-            icon()
+        // Glowing Active Indicator Pill
+        Box(
+            modifier = Modifier
+                .width(54.dp)
+                .height(30.dp)
+                .clip(RoundedCornerShape(100.dp))
+                .background(
+                    if (selected) {
+                        androidx.compose.ui.graphics.Brush.horizontalGradient(
+                            colors = listOf(Color(0xFF10B981), Color(0xFF047857))
+                        )
+                    } else {
+                        androidx.compose.ui.graphics.Brush.horizontalGradient(
+                            colors = listOf(Color.Transparent, Color.Transparent)
+                        )
+                    }
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            CompositionLocalProvider(LocalContentColor provides if (selected) Color.White else SproutInkSoft) {
+                icon()
+            }
         }
         Text(
             text = title,
@@ -517,7 +551,7 @@ private fun BottomTabItem(
                 fontFamily = FontFamily.Default,
                 fontSize = 11.5.sp,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                color = if (selected) SproutLeafDark else SproutInkSoft
+                color = if (selected) Color(0xFF047857) else SproutInkSoft
             )
         )
     }

@@ -223,7 +223,7 @@ fun AccountSyncDialog(
                                             color = SproutLeafDark
                                         )
                                         Text(
-                                            text = "⚡ 500 daily AI Nutritionist queries, 500 vision scans & all 5 meal planners unlocked.",
+                                            text = "⚡ 200 daily AI Nutritionist queries, 200 vision scans & all 5 meal planners unlocked.",
                                             fontSize = 11.sp,
                                             color = SproutInkSoft,
                                             lineHeight = 14.5.sp
@@ -244,7 +244,7 @@ fun AccountSyncDialog(
                                     }
                                 } else {
                                     Text(
-                                        text = "Unlock all 5 meal planners, 500 daily AI tutor questions & scanner pathology. Includes 14-Day Free Trial.",
+                                        text = "Unlock all 5 meal planners, 200 daily AI tutor questions & scanner pathology. Includes 14-Day Free Trial.",
                                         fontSize = 11.sp,
                                         color = SproutInkMuted
                                     )

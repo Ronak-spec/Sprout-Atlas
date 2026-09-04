@@ -395,7 +395,7 @@ fun SproutPaywallDialog(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = "• Grants 30 days (1 monthly trial) of Sprout Atlas Pro\n• Valid for one-time activation until October 30, 2026\n• Includes 500 daily AI scans & all botanical guides",
+                        text = "• Grants 30 days (1 monthly trial) of Sprout Atlas Pro\n• Valid for one-time activation until October 30, 2026\n• Includes 200 daily AI scans & all botanical guides",
                         fontSize = 11.sp,
                         color = SproutInkSoftText,
                         lineHeight = 15.sp
@@ -687,7 +687,7 @@ private fun BotanicalPaywallMainView(
                 // Perk List
                 Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
                     PerkRow(text = "All 500+ guides — nutrients, treatments, botanical facts, unlocked")
-                    PerkRow(text = "Up to 500 Nutrition Tutor, Scanner, and Meal Planner uses per day")
+                    PerkRow(text = "Up to 200 Nutrition Tutor, Scanner, and Meal Planner uses per day")
                     PerkRow(text = "All 5 dietary archetypes with clinical safety checks")
                     PerkRow(text = "Ad-free, always")
                 }
@@ -1870,7 +1870,7 @@ private fun PaywallSuccessConfirmationView(
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Daily AI Quota:", style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = SproutInkSoftText))
-                    Text("500 Queries / Day", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 11.5.sp, color = SproutLeafDarkGreen))
+                    Text("200 Queries / Day", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 11.5.sp, color = SproutLeafDarkGreen))
                 }
                 if (expiryDate != null) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

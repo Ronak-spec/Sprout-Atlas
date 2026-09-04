@@ -255,7 +255,7 @@ class SubscriptionService(private val context: Context) {
 
         val effectivePromo = if (promoExpiry > now) promoExpiry else 0L
         val effectiveTrial = if (trialExpiry > now) trialExpiry else 0L
-        val isLifetime = subPlan == "lifetime" || promoCode == "LIFETIME" || promoCode == "PROFOUNDER"
+        val isLifetime = subPlan == "lifetime"
         val effectiveSub = if (isLifetime) Long.MAX_VALUE else if (subExpiry > now) subExpiry else 0L
 
         val activeExpiry = if (isLifetime) Long.MAX_VALUE else maxOf(effectivePromo, effectiveTrial, effectiveSub)
@@ -486,7 +486,7 @@ class SubscriptionService(private val context: Context) {
             else -> 0L
         }
 
-        val isLifetime = subPlan == "lifetime" || promoCode == "LIFETIME" || promoCode == "PROFOUNDER"
+        val isLifetime = subPlan == "lifetime"
 
         val expDate = when {
             isRcProActive && proEntitlement?.expirationDate != null -> {
@@ -568,9 +568,7 @@ class SubscriptionService(private val context: Context) {
         }
 
         // 2. Validate against the single designated promo code
-        val isValidMonthlyCode = cleanCode == SINGLE_PROMO_CODE || 
-                cleanCode == "SPROUTMONTHLY" || 
-                cleanCode == "SPROUTPRO30"
+        val isValidMonthlyCode = cleanCode == SINGLE_PROMO_CODE
 
         if (!isValidMonthlyCode) {
             return PromoCodeResult(

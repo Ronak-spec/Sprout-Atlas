@@ -237,7 +237,7 @@ class FirebaseAuthService(private val context: Context) {
         }
 
         if (clientId.isBlank()) {
-            val errorMsg = "Google OAuth Web Client ID is not configured. You can use Quick Botanist Sign-In or Email Login below!"
+            val errorMsg = "Google OAuth Web Client ID is not configured. Please use Email Login below!"
             _authState.value = AuthState.Error(errorMsg)
             return Result.failure(IllegalArgumentException(errorMsg))
         }
@@ -294,7 +294,7 @@ class FirebaseAuthService(private val context: Context) {
             Result.failure(e)
         } catch (e: Exception) {
             Log.e(tag, "Google Sign-in failed", e)
-            val err = "Google Sign-in unavailable on this device (${e.localizedMessage ?: "No accounts registered"}). Tap '1-Tap Botanist Sign-In' below to connect instantly!"
+            val err = "Google Sign-in unavailable on this device (${e.localizedMessage ?: "No accounts registered"}). Please use Email Login to connect."
             _authState.value = AuthState.Error(err)
             Result.failure(e)
         }

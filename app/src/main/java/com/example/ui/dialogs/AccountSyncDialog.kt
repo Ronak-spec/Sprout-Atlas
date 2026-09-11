@@ -409,7 +409,7 @@ fun AccountSyncDialog(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "1-Tap / Google",
+                                    text = "Google Sign-In",
                                     style = TextStyle(
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
@@ -441,12 +441,13 @@ fun AccountSyncDialog(
                         Spacer(modifier = Modifier.height(14.dp))
 
                         if (authTab == 0) {
-                            // Quick 1-Tap Botanist Sign-In
+                            // Google Sign In Button
                             Button(
                                 onClick = {
                                     coroutineScope.launch {
                                         isSigningIn = true
-                                        val result = authService.signInQuickBotanist("Botanical Explorer")
+                                        val override = if (customClientIdInput.isNotBlank()) customClientIdInput.trim() else null
+                                        val result = authService.signInWithGoogle(override)
                                         isSigningIn = false
                                         if (result.isSuccess) {
                                             val user = result.getOrThrow()
@@ -468,57 +469,7 @@ fun AccountSyncDialog(
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(48.dp)
-                                    .testTag("btn_quick_signin")
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Text(
-                                        text = if (isSigningIn) "Signing in..." else "1-Tap Instant Sign-In",
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 14.sp
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            // Google Sign In Button
-                            OutlinedButton(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        isSigningIn = true
-                                        val override = if (customClientIdInput.isNotBlank()) customClientIdInput.trim() else null
-                                        val result = authService.signInWithGoogle(override)
-                                        isSigningIn = false
-                                        if (result.isSuccess) {
-                                            val user = result.getOrThrow()
-                                            firestoreService.attachUserListener(user.uid, repository)
-                                            firestoreService.syncRepositoryToCloud(user.uid, repository)
-                                            subscriptionService?.linkUserEmail(user.email, user.uid)
-                                            val activated = subscriptionService?.activateTrialOnSignIn(user.email ?: user.uid) == true
-                                            if (activated) {
-                                                android.widget.Toast.makeText(context, "Welcome! 14-Day Free Pro Trial Activated 🌱", android.widget.Toast.LENGTH_SHORT).show()
-                                            }
-                                        }
-                                    }
-                                },
-                                enabled = !isSigningIn,
-                                shape = RoundedCornerShape(100.dp),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = SproutInk
-                                ),
-                                border = androidx.compose.foundation.BorderStroke(1.4.dp, SproutInk),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
+                                    .height(50.dp)
                                     .testTag("btn_google_signin")
                             ) {
                                 Row(
@@ -528,9 +479,9 @@ fun AccountSyncDialog(
                                     // Google 'G' letter icon badge
                                     Box(
                                         modifier = Modifier
-                                            .size(20.dp)
+                                            .size(22.dp)
                                             .clip(CircleShape)
-                                            .background(SproutTomato),
+                                            .background(Color.White),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
@@ -538,15 +489,15 @@ fun AccountSyncDialog(
                                             style = TextStyle(
                                                 fontFamily = FontFamily.Serif,
                                                 fontWeight = FontWeight.Black,
-                                                fontSize = 12.sp,
-                                                color = Color.White
+                                                fontSize = 13.sp,
+                                                color = SproutTomato
                                             )
                                         )
                                     }
                                     Text(
-                                        text = "Sign in with Google",
+                                        text = if (isSigningIn) "Connecting..." else "Sign in with Google",
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 13.5.sp
+                                        fontSize = 14.sp
                                     )
                                 }
                             }
